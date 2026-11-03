@@ -1,7 +1,7 @@
-// Banco de dados expandido de compostos com marcadores para análise
+// Expanded compound database with markers for analysis
         
 
-        // --- Variáveis globais e estado do aplicativo ---
+        // --- Global variables and application state ---
         let selectedCategories = [];
         let selectedDifficulties = [];
         let currentQuestion = null;
@@ -18,44 +18,44 @@
         let flashcardIndex = 0;
 
         const tagTranslations = {
-            cation: 'Cátions', anion: 'Ânions', salt: 'Sais', acid: 'Ácidos', base: 'Bases', oxide: 'Óxidos',
-            facil: 'Nível Fácil', medio: 'Nível Médio', dificil: 'Nível Difícil',
-            carga_variavel: 'Cátions de Carga Variável', transicao: 'Metais de Transição',
-            oxianion: 'Oxiânions', hidracido: 'Hidrácidos', oxiacido: 'Oxiácidos',
-            ferro: 'Compostos de Ferro', cobre: 'Compostos de Cobre',
-            forte: 'Compostos Fortes', fraca: 'Compostos Fracos', fraco: 'Compostos Fracos',
-            anfotero: 'Compostos Anfóteros',
-            haleto: 'Compostos de Halogênios',
-            amonio: 'Sais de Amônio',
-            poliatomico: 'Íons Poliatômicos',
-            hidrogenossal: 'Sais Ácidos', hidrogenoanion: 'Hidrogeno-ânions',
-            cromo: 'Compostos de Cromo', cromato: 'Cromatos', dicromato: 'Dicromatos',
-            fosforo: 'Compostos de Fósforo', fosfato: 'Fosfatos',
-            estanho: 'Compostos de Estanho',
-            chumbo: 'Compostos de Chumbo',
-            arsenio: 'Compostos de Arsênio',
-            manganes: 'Compostos de Manganês',
-            carbono: 'Compostos de Carbono', carbonato: 'Carbonatos',
-            boro: 'Compostos de Boro', borato: 'Boratos',
-            vanadio: 'Compostos de Vanádio', vanadato: 'Vanadatos',
-            nitrogenio: 'Compostos de Nitrogênio', nitrato: 'Nitratos', nitrito: 'Nitritos',
-            enxofre: 'Compostos de Enxofre', sulfato: 'Sulfatos', sulfito: 'Sulfitos', sulfeto: 'Sulfetos',
-            tiossulfato: 'Tiossulfatos', tiocianato: 'Tiocianatos', cianato: 'Cianatos',
-            alcalino: 'Metais Alcalinos', alcalino_terroso: 'Metais Alcalino-Terrosos',
-            calcogenio: 'Calcogênios', monoatomico: 'Íons Monoatômicos',
-            metal: 'Metais', ametal: 'Ametais',
-            acido: 'Óxidos Ácidos', basico: 'Óxidos Básicos', neutro: 'Óxidos Neutros',
-            misto: 'Compostos Mistos', moderado: 'Força Moderada',
-            organico: 'Compostos Orgânicos', peroxido: 'Peróxidos',
-            post_transicao: 'Pós-Transição', raro: 'Terras Raras',
-            grupo13: 'Grupo 13', titanio: 'Compostos de Titânio', titanato: 'Titanatos',
-            mercurio: 'Compostos de Mercúrio', niquel: 'Compostos de Níquel',
-            cobalto: 'Compostos de Cobalto', ouro: 'Compostos de Ouro',
-            tungstenio: 'Compostos de Tungstênio', molibdenio: 'Compostos de Molibdênio',
-            amonia: 'Amônia'
+            cation: 'Cations', anion: 'Anions', salt: 'Salts', acid: 'Acids', base: 'Bases', oxide: 'Oxides',
+            facil: 'Easy', medio: 'Medium', dificil: 'Hard',
+            carga_variavel: 'Cations with Variable Charge', transicao: 'Transition Metals',
+            oxianion: 'Oxyanions', hidracido: 'Hydracids', oxiacido: 'Oxyacids',
+            ferro: 'Iron Compounds', cobre: 'Copper Compounds',
+            forte: 'Strong Compounds', fraca: 'Weak Compounds', fraco: 'Weak Compounds',
+            anfotero: 'Amphoteric Compounds',
+            haleto: 'Halogen Compounds',
+            amonio: 'Ammonium Salts',
+            poliatomico: 'Polyatomic Ions',
+            hidrogenossal: 'Acid Salts', hidrogenoanion: 'Hydrogen Anions',
+            cromo: 'Chromium Compounds', cromato: 'Chromates', dicromato: 'Dichromates',
+            fosforo: 'Phosphorus Compounds', fosfato: 'Phosphates',
+            estanho: 'Tin Compounds',
+            chumbo: 'Lead Compounds',
+            arsenio: 'Arsenic Compounds',
+            manganes: 'Manganese Compounds',
+            carbono: 'Carbon Compounds', carbonato: 'Carbonates',
+            boro: 'Boron Compounds', borato: 'Borates',
+            vanadio: 'Vanadium Compounds', vanadato: 'Vanadates',
+            nitrogenio: 'Nitrogen Compounds', nitrato: 'Nitrates', nitrito: 'Nitrites',
+            enxofre: 'Sulfur Compounds', sulfato: 'Sulfates', sulfito: 'Sulfites', sulfeto: 'Sulfides',
+            tiossulfato: 'Thiosulfates', tiocianato: 'Thiocyanates', cianato: 'Cyanates',
+            alcalino: 'Alkali Metals', alcalino_terroso: 'Alkaline Earth Metals',
+            calcogenio: 'Chalcogens', monoatomico: 'Monoatomic Ions',
+            metal: 'Metals', ametal: 'Nonmetals',
+            acido: 'Acidic Oxides', basico: 'Basic Oxides', neutro: 'Neutral Oxides',
+            misto: 'Mixed Compounds', moderado: 'Moderate Strength',
+            organico: 'Organic Compounds', peroxido: 'Peroxides',
+            post_transicao: 'Post-transition', raro: 'Rare Earths',
+            grupo13: 'Group 13', titanio: 'Titanium Compounds', titanato: 'Titanates',
+            mercurio: 'Mercury Compounds', niquel: 'Nickel Compounds',
+            cobalto: 'Cobalt Compounds', ouro: 'Gold Compounds',
+            tungstenio: 'Tungsten Compounds', molibdenio: 'Molybdenum Compounds',
+            amonia: 'Ammonia'
         };
 
-        // --- Funções do Aplicativo ---
+        // --- Application functions ---
 
         function switchTab(tabName, event) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -66,7 +66,7 @@
             if (event && event.currentTarget) {
                 event.currentTarget.classList.add('active');
             } else {
-                // Se chamado sem evento, procura o botão correspondente
+                // If called without an event, find the matching button
                 const tabBtn = Array.from(document.querySelectorAll('.tab')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(`'${tabName}'`));
                 if (tabBtn) tabBtn.classList.add('active');
             }
@@ -110,11 +110,11 @@
             quizMode = document.querySelector('input[name="quizMode"]:checked').value;
 
             if (selectedCategories.length === 0) {
-                showCustomAlert('Por favor, selecione pelo menos uma categoria.');
+                showCustomAlert('Please select at least one category.');
                 return;
             }
             if (selectedDifficulties.length === 0) {
-                showCustomAlert('Por favor, selecione pelo menos um nível de dificuldade.');
+                showCustomAlert('Please select at least one difficulty level.');
                 return;
             }
 
@@ -123,7 +123,7 @@
             );
 
             if (quizCompounds.length < 4) {
-                showCustomAlert('Não há compostos suficientes com os filtros selecionados. Tente selecionar mais categorias ou dificuldades.');
+                showCustomAlert('There are not enough compounds with the selected filters. Try selecting more categories or difficulties.');
                 return;
             }
 
@@ -146,25 +146,25 @@
             const correctValue = isFormulaMode ? correctAnswer.formula : correctAnswer.name;
             const propertyToCompare = isFormulaMode ? 'formula' : 'name';
 
-            // Marcadores que não indicam o elemento/família e devem ser ignorados na busca por similaridade
+            // Markers that do not indicate the element/family and must be ignored in similarity matching
             const ignoreTags = ['facil', 'medio', 'dificil', 'oxianion', 'monoatomico', 'poliatomico', 'forte', 'fraco', 'moderado', 'basico', 'acido', 'neutro', 'anfotero', 'misto', 'organico', 'hidrogenoanion'];
             const meaningfulTags = (correctAnswer.tags || []).filter(t => !ignoreTags.includes(t));
 
-            // Nível 1: Mesmo tipo E compartilha uma tag de família (ex: 'haleto', 'enxofre')
+            // Level 1: Same type AND shares a family tag (e.g. 'halide', 'sulfur')
             let level1 = compounds.filter(c => 
                 c.type === correctAnswer.type && 
                 c[propertyToCompare] !== correctValue &&
                 (c.tags || []).some(t => meaningfulTags.includes(t))
             );
 
-            // Nível 2: Mesmo tipo (mas sem tag em comum)
+            // Level 2: Same type (but no shared tag)
             let level2 = compounds.filter(c => 
                 c.type === correctAnswer.type && 
                 c[propertyToCompare] !== correctValue &&
                 !level1.includes(c)
             );
 
-            // Nível 3: Qualquer outro (reserva)
+            // Level 3: Any other (fallback)
             let level3 = compounds.filter(c => 
                 c[propertyToCompare] !== correctValue &&
                 !level1.includes(c) && !level2.includes(c)
@@ -227,7 +227,7 @@
 
             questionDisplay.innerHTML = question;
 
-            const typeNames = { 'cation': 'Cátion', 'anion': 'Ânion', 'salt': 'Sal', 'acid': 'Ácido', 'base': 'Base', 'oxide': 'Óxido' };
+            const typeNames = { 'cation': 'Cation', 'anion': 'Anion', 'salt': 'Salt', 'acid': 'Acid', 'base': 'Base', 'oxide': 'Oxide' };
             document.getElementById('type-badge').textContent = typeNames[currentQuestion.type];
 
             const colors = { 'cation': '#dc3545', 'anion': '#007bff', 'salt': '#17a2b8', 'acid': '#28a745', 'base': '#6f42c1', 'oxide': '#fd7e14' };
@@ -277,12 +277,12 @@
             }
             updateStats();
 
-            const difficultyTranslations = { 'facil': 'Fácil', 'medio': 'Médio', 'dificil': 'Difícil' };
+            const difficultyTranslations = { 'facil': 'Easy', 'medio': 'Medium', 'dificil': 'Hard' };
             const explanation = document.getElementById('explanation');
             explanation.innerHTML = `
-                <h4>${selected === correctAnswer ? '✅ Correto!' : '❌ Incorreto!'}</h4>
-                <p><strong>Fórmula:</strong> ${currentQuestion.formula}</p>
-                <p><strong>Nome:</strong> <span class="${currentQuestion.type}">${currentQuestion.name}</span>
+                <h4>${selected === correctAnswer ? '✅ Correct!' : '❌ Incorrect!'}</h4>
+                <p><strong>Formula:</strong> ${currentQuestion.formula}</p>
+                <p><strong>Name:</strong> <span class="${currentQuestion.type}">${currentQuestion.name}</span>
                     <span class="difficulty-indicator difficulty-${currentQuestion.difficulty}">
                         ${difficultyTranslations[currentQuestion.difficulty]}
                     </span>
@@ -313,17 +313,17 @@
             const errorEntries = Object.entries(errorTracker);
 
             if (errorEntries.length === 0) {
-                resultsDiv.innerHTML = '<p>Nenhum erro registrado ainda. Continue praticando!</p>';
+                resultsDiv.innerHTML = '<p>No errors recorded yet. Keep practicing!</p>';
                 reinforcementBtn.style.display = 'none';
                 return;
             }
 
             errorEntries.sort(([, a], [, b]) => b - a);
 
-            let html = '<h4>Suas maiores dificuldades:</h4><ul>';
+            let html = '<h4>Your biggest difficulties:</h4><ul>';
             errorEntries.slice(0, 5).forEach(([tag, count]) => {
                 const tagName = tagTranslations[tag] || tag;
-                html += `<li>${tagName}: ${count} erro(s)</li>`;
+                html += `<li>${tagName}: ${count} error(s)</li>`;
             });
             html += '</ul>';
 
@@ -338,7 +338,7 @@
                 .map(([tag]) => tag);
 
             if (weakTags.length === 0) {
-                showCustomAlert('Não há dados de erros suficientes para criar um quiz de reforço.');
+                showCustomAlert('There is not enough error data to create a reinforcement quiz.');
                 return;
             }
 
@@ -348,7 +348,7 @@
             });
 
             if (quizCompounds.length < 4) {
-                showCustomAlert('Não foi possível criar um quiz de reforço com variedade suficiente. Continue praticando para gerar mais dados.');
+                showCustomAlert('Could not create a reinforcement quiz with enough variety. Keep practicing to generate more data.');
                 return;
             }
 
@@ -365,15 +365,15 @@
             nextQuestion();
         }
 
-        // --- Funções Adicionais ---
+        // --- Additional functions ---
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const themeToggleBtn = document.querySelector('.theme-toggle');
             if (document.body.classList.contains('dark-mode')) {
-                themeToggleBtn.innerHTML = '☀️ Modo Claro';
+                themeToggleBtn.innerHTML = '☀️ Light Mode';
                 localStorage.setItem('theme', 'dark-mode');
             } else {
-                themeToggleBtn.innerHTML = '🌙 Modo Escuro';
+                themeToggleBtn.innerHTML = '🌙 Dark Mode';
                 localStorage.setItem('theme', 'light-mode');
             }
         }
@@ -382,17 +382,17 @@
             let csvContent = "data:text/csv;charset=utf-8,";
             const errorEntries = Object.entries(errorTracker);
             if (errorEntries.length === 0 && totalQuestions === 0) {
-                showCustomAlert("Nenhuma análise para exportar. Jogue o quiz primeiro!");
+                showCustomAlert("No analysis to export. Play the quiz first!");
                 return;
             }
 
             const percentageVal = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
-            csvContent += "Resumo Geral\n";
-            csvContent += `Pontuação Total,${score}/${totalQuestions}\n`;
-            csvContent += `% de Acertos,${percentageVal}%\n`;
-            csvContent += `Sequência Atual,${streak}\n\n`;
+            csvContent += "General Summary\n";
+            csvContent += `Total Score,${score}/${totalQuestions}\n`;
+            csvContent += `Correct %,${percentageVal}%\n`;
+            csvContent += `Current Streak,${streak}\n\n`;
 
-            csvContent += "Categoria,Erros\n";
+            csvContent += "Category,Errors\n";
             errorEntries.forEach(([tag, count]) => {
                 const tagName = tagTranslations[tag] || tag;
                 csvContent += `${tagName},${count}\n`;
@@ -400,7 +400,7 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "analise_desempenho.csv");
+            link.setAttribute("download", "performance_analysis.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -431,16 +431,16 @@
             const card = flashcardDeck[flashcardIndex];
             document.getElementById('flashcard-front').innerHTML = `<div>${card.formula}</div>`;
             document.getElementById('flashcard-back').innerHTML = `<div>${card.name}</div>`;
-            document.getElementById('flashcard-counter').textContent = `Cartão ${flashcardIndex + 1} de ${flashcardDeck.length}`;
+            document.getElementById('flashcard-counter').textContent = `Card ${flashcardIndex + 1} of ${flashcardDeck.length}`;
 
             if (!keepFlipped) {
                 document.getElementById('flashcard').classList.remove('flipped');
             }
         }
 
-        // --- Função para alerta personalizado (substitui o alert() padrão) ---
+        // --- Custom alert function (replaces the default alert()) ---
         function showCustomAlert(message) {
-            // Cria os elementos do modal
+            // Create the modal elements
             const modalOverlay = document.createElement('div');
             modalOverlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; justify-content: center; align-items: center;';
 
@@ -459,12 +459,12 @@
             modalButton.onmouseover = () => modalButton.style.transform = 'scale(1.05)';
             modalButton.onmouseout = () => modalButton.style.transform = 'scale(1)';
 
-            // Função para fechar o modal
+            // Function to close the modal
             const closeModal = () => document.body.removeChild(modalOverlay);
             modalButton.onclick = closeModal;
             modalOverlay.onclick = (e) => { if (e.target === modalOverlay) closeModal(); };
 
-            // Monta e exibe o modal
+            // Assemble and show the modal
             modalBox.appendChild(modalMessage);
             modalBox.appendChild(modalButton);
             modalOverlay.appendChild(modalBox);
@@ -472,7 +472,7 @@
         }
 
 
-        // --- Inicialização ---
+        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', function () {
             const contentArea = document.getElementById('content-area');
             const scrollBtn = document.getElementById('scrollTop');
