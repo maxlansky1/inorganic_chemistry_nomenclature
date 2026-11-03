@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aplicativo educacional SPA para treino de nomenclatura IUPAC de compostos inorgânicos. Quiz interativo, flashcards e tabelas de consulta.">
+    <meta property="og:title" content="Nomenclatura de Compostos Inorgânicos">
+    <meta property="og:description" content="Treine nomenclatura IUPAC de forma interativa e offline.">
+    <meta property="og:type" content="website">
+    <title>Nomenclatura de Compostos Inorgânicos - Versão Ultra Expandida</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="app-header">
+            <h1>🧪 Nomenclatura de Compostos Inorgânicos</h1>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">🌙 Modo Escuro</button>
+                <button class="export-btn" onclick="exportResults()">📊 Exportar</button>
+            </div>
+        </div>
+
+        <div class="tabs" role="tablist">
+            <button class="tab active" role="tab" aria-selected="true" onclick="switchTab('quiz', event)">Quiz Interativo</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('flashcards', event)">Flashcards</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('analysis', event)">Análise de Desempenho</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('rules', event)">Regras Gerais</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('cations', event)">Tabela de Cátions</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('anions', event)">Tabela de Ânions</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('acids', event)">Tabela de Ácidos</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('bases', event)">Tabela de Bases</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('oxides', event)">Tabela de Óxidos</button>
+            <button class="tab" role="tab" aria-selected="false" onclick="switchTab('salts', event)">Tabela de Sais</button>
+        </div>
+
+        <div class="content-area" id="content-area">
+            <!-- Seção do Quiz -->
+            <div class="quiz-container active" id="quiz-section">
+                <div class="category-selector" id="category-selector">
+                    <h3>📚 Selecione as categorias para praticar:</h3>
+                    <div class="category-options">
+                        <button class="category-btn" data-category="all" onclick="toggleCategory('all')">🎯
+                            Todas</button>
+                        <button class="category-btn" data-category="cation" onclick="toggleCategory('cation')">➕
+                            Cátions</button>
+                        <button class="category-btn" data-category="anion" onclick="toggleCategory('anion')">➖
+                            Ânions</button>
+                        <button class="category-btn" data-category="salt" onclick="toggleCategory('salt')">🧂
+                            Sais</button>
+                        <button class="category-btn" data-category="acid" onclick="toggleCategory('acid')">🧪
+                            Ácidos</button>
+                        <button class="category-btn" data-category="base" onclick="toggleCategory('base')">💜
+                            Bases</button>
+                        <button class="category-btn" data-category="oxide" onclick="toggleCategory('oxide')">🟠
+                            Óxidos</button>
+                    </div>
+
+                    <div class="difficulty-selector">
+                        <h4>🎯 Nível de Dificuldade:</h4>
+                        <label><input type="checkbox" name="difficulty" value="facil" checked> Fácil</label>
+                        <label><input type="checkbox" name="difficulty" value="medio" checked> Médio</label>
+                        <label><input type="checkbox" name="difficulty" value="dificil" checked> Difícil</label>
+                    </div>
+
+                    <div class="quiz-mode-selector">
+                        <h4>🎮 Modo de Jogo:</h4>
+                        <label><input type="radio" name="quizMode" value="formulaToName" checked> Fórmula ➔ Nome</label>
+                        <label><input type="radio" name="quizMode" value="nameToFormula"> Nome ➔ Fórmula</label>
+                        <label><input type="radio" name="quizMode" value="mixed"> Modo Misto</label>
+                    </div>
+
+                    <button class="start-quiz-btn" onclick="startQuiz()">🚀 Iniciar Quiz</button>
+                </div>
+
+                <div class="quiz-area" id="quiz-area">
+                    <div class="stats-bar">
+                        <div class="stat-card">
+                            <h4>Pontuação</h4>
+                            <div class="value"><span id="score">0</span>/<span id="total">0</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Acertos</h4>
+                            <div class="value"><span id="percentage">0</span>%</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Sequência</h4>
+                            <div class="value"><span id="streak">0</span>🔥</div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>Nível</h4>
+                            <div class="value" id="level">1</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+
+                    <div class="compound-display" id="compound-display">
+                        <span class="compound-type-badge" id="type-badge"></span>
+                        <span id="compound-question"></span>
+                    </div>
+
+                    <div class="options" id="options"></div>
+                    <div class="explanation" id="explanation"></div>
+                    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Próxima Questão</button>
+                    <button class="reset-btn" onclick="resetQuiz()">🔄 Voltar à Seleção</button>
+                </div>
+            </div>
+
+            <!-- Seção de Flashcards -->
+            <div class="quiz-container" id="flashcards-section">
+                <div class="rule-card">
+                    <h3>🗂️ Flashcards de Estudo</h3>
+                    <p>Clique no cartão para virar e revelar a resposta. Use as setas para navegar.</p>
+
+                    <div class="flashcard-container">
+                        <div class="flashcard" id="flashcard" onclick="flipCard()" role="button" aria-label="Virar flashcard" tabindex="0" onkeypress="if(event.key==='Enter') flipCard()">
+                            <div class="flashcard-inner" id="flashcard-inner">
+                                <div class="flashcard-front" id="flashcard-front">
+                                    <div>Clique para começar</div>
+                                </div>
+                                <div class="flashcard-back" id="flashcard-back">
+                                    <div>Resposta aparecerá aqui</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="reset-btn" onclick="previousCard()"
+                            style="display: inline-block; margin: 0 10px;">⬅️ Anterior</button>
+                        <button class="start-quiz-btn" onclick="nextCard()"
+                            style="display: inline-block; margin: 0 10px; padding: 10px 20px; font-size: 1rem;">Próximo
+                            ➡️</button>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 15px;">
+                        <span id="flashcard-counter">Cartão 0 de 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Análise de Desempenho -->
+            <div class="rules-section" id="analysis-section">
+                <div class="rule-card">
+                    <h3>📊 Análise de Desempenho</h3>
+                    <p>Analise seus pontos fracos e fortes para focar seus estudos de forma mais eficiente.</p>
+
+                    <div id="analysis-results" style="margin-top: 20px;">
+                        <p>Complete algumas questões para ver sua análise detalhada de desempenho.</p>
+                    </div>
+
+                    <button class="start-quiz-btn" id="reinforcement-quiz-btn" style="display: none; margin-top: 20px;"
+                        onclick="startReinforcementQuiz()">🧠 Quiz de Reforço</button>
+                </div>
+            </div>
+
+            <!-- Seção de Regras Gerais -->
+            <div class="rules-section" id="rules-section">
+                <div class="rule-card">
+                    <h3 class="cation">📚 Regras Fundamentais de Nomenclatura IUPAC</h3>
+
+                    <h4>1. Ordem de Escrita e Nomenclatura (Compostos Iônicos)</h4>
+                    <div class="example-box">
+                        <p>A regra fundamental é escrever primeiro o cátion e depois o ânion (ex: NaCl), mas nomear na
+                            ordem inversa: <strong>Nome do Ânion + "de" + Nome do Cátion</strong>.</p>
+                        <p>Ex: NaCl → ânion (Cl⁻, cloreto) + cátion (Na⁺, sódio) → <strong>Cloreto de sódio</strong>.
+                        </p>
+                        <p>Ex: CaSO₄ → ânion (SO₄²⁻, sulfato) + cátion (Ca²⁺, cálcio) → <strong>Sulfato de
+                                cálcio</strong>.</p>
+                    </div>
+
+                    <h4>2. Cátions com Múltiplos Estados de Oxidação (Sistema de Stock)</h4>
+                    <div class="example-box">
+                        <p>Para metais que podem formar cátions com cargas diferentes (comuns em metais de transição), a
+                            carga do íon é indicada por um algarismo romano em parênteses, imediatamente após o nome do
+                            metal (sem espaço).</p>
+                        <table>
+                            <tr>
+                                <th>Íon</th>
+                                <th>Nome (Stock)</th>
+                                <th>Nome (Antigo)</th>
+                                <th>Exemplo de Composto</th>
+                            </tr>
+                            <tr>
+                                <td>Fe²⁺</td>
+                                <td>Ferro(II)</td>
+                                <td>Ferroso</td>
+                                <td>FeCl₂ → Cloreto de ferro(II)</td>
+                            </tr>
+                            <tr>
+                                <td>Fe³⁺</td>
+                                <td>Ferro(III)</td>
+                                <td>Férrico</td>
+                                <td>FeCl₃ → Cloreto de ferro(III)</td>
+                            </tr>
+                            <tr>
+                                <td>Cu⁺</td>
+                                <td>Cobre(I)</td>
+                                <td>Cuproso</td>
+                                <td>Cu₂O → Óxido de cobre(I)</td>
+                            </tr>
+                            <tr>
+                                <td>Cu²⁺</td>
+                                <td>Cobre(II)</td>
+                                <td>Cúprico</td>
+                                <td>CuO → Óxido de cobre(II)</td>
+                            </tr>
+                        </table>
+                        <div class="memorization-tips">
+                            <h4>💡 Dica</h4>
+                            <p>Na nomenclatura antiga, o sufixo <strong>-oso</strong> é para o menor NOx e
+                                <strong>-ico</strong> para o maior NOx.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h4>3. Prefixos Multiplicativos (Compostos Moleculares)</h4>
+                    <div class="example-box">
+                        <p>Usados principalmente para compostos binários formados entre ametais (ex: óxidos ácidos,
+                            haletos de ametais). Os prefixos indicam o número de átomos de cada elemento.</p>
+                        <table>
+                            <tr>
+                                <th>Nº</th>
+                                <th>Prefixo</th>
+                                <th>Exemplo</th>
+                                <th>Nome</th>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>mono-</td>
+                                <td>CO</td>
+                                <td>Monóxido de carbono (mono- é omitido no 2º elemento)</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>di-</td>
+                                <td>CO₂</td>
+                                <td>Dióxido de carbono</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>tri-</td>
+                                <td>SO₃</td>
+                                <td>Trióxido de enxofre</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>tetra-</td>
+                                <td>CCl₄</td>
+                                <td>Tetracloreto de carbono</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>penta-</td>
+                                <td>P₂O₅</td>
+                                <td>Pentóxido de difósforo</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>hexa-</td>
+                                <td>SF₆</td>
+                                <td>Hexafluoreto de enxofre</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>hepta-</td>
+                                <td>Cl₂O₇</td>
+                                <td>Heptóxido de dicloro</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>octa-</td>
+                                <td>Cl₂O₈</td>
+                                <td>Octóxido de dicloro</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>nona-</td>
+                                <td>I₂O₉</td>
+                                <td>Nonóxido de diiodo</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>deca-</td>
+                                <td>P₄O₁₀</td>
+                                <td>Decaóxido de tetrafósforo</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Cátions (Mantida a versão mais completa) -->
+            <div class="rules-section" id="cations-section">
+                <div class="rule-card">
+                    <h3 class="cation">➕ Tabela de Cátions Comuns</h3>
+                    <h4>Cátions com Carga Fixa</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Grupo/Observação</th>
+                        </tr>
+                        <tr>
+                            <td>H⁺</td>
+                            <td>Hidrogênio (próton)</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Li⁺, Na⁺, K⁺, Rb⁺, Cs⁺, Fr⁺</td>
+                            <td>(Nome do elemento)</td>
+                            <td>Metais Alcalinos (Grupo 1)</td>
+                        </tr>
+                        <tr>
+                            <td>Be²⁺, Mg²⁺, Ca²⁺, Sr²⁺, Ba²⁺, Ra²⁺</td>
+                            <td>(Nome do elemento)</td>
+                            <td>Alcalino-Terrosos (Grupo 2)</td>
+                        </tr>
+                        <tr>
+                            <td>Ag⁺</td>
+                            <td>Prata</td>
+                            <td>Metal de Transição (carga fixa +1)</td>
+                        </tr>
+                        <tr>
+                            <td>Zn²⁺</td>
+                            <td>Zinco</td>
+                            <td>Metal de Transição (carga fixa +2)</td>
+                        </tr>
+                        <tr>
+                            <td>Cd²⁺</td>
+                            <td>Cádmio</td>
+                            <td>Metal de Transição (carga fixa +2)</td>
+                        </tr>
+                        <tr>
+                            <td>Al³⁺</td>
+                            <td>Alumínio</td>
+                            <td>Grupo 13</td>
+                        </tr>
+                        <tr>
+                            <td>La³⁺</td>
+                            <td>Lantânio</td>
+                            <td>Elemento de terras raras</td>
+                        </tr>
+                        <tr>
+                            <td>Ce³⁺</td>
+                            <td>Cério</td>
+                            <td>Elemento de terras raras</td>
+                        </tr>
+                    </table>
+                    <h4>Cátions com Carga Variável (Sistema de Stock)</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Nome Alternativo (Antigo)</th>
+                        </tr>
+                        <tr>
+                            <td>Fe²⁺ / Fe³⁺</td>
+                            <td>Ferro(II) / Ferro(III)</td>
+                            <td>Ferroso / Férrico</td>
+                        </tr>
+                        <tr>
+                            <td>Cu⁺ / Cu²⁺</td>
+                            <td>Cobre(I) / Cobre(II)</td>
+                            <td>Cuproso / Cúprico</td>
+                        </tr>
+                        <tr>
+                            <td>Sn²⁺ / Sn⁴⁺</td>
+                            <td>Estanho(II) / Estanho(IV)</td>
+                            <td>Estanoso / Estânico</td>
+                        </tr>
+                        <tr>
+                            <td>Pb²⁺ / Pb⁴⁺</td>
+                            <td>Chumbo(II) / Chumbo(IV)</td>
+                            <td>Plumboso / Plúmbico</td>
+                        </tr>
+                        <tr>
+                            <td>Hg₂²⁺ / Hg²⁺</td>
+                            <td>Mercúrio(I) / Mercúrio(II)</td>
+                            <td>Mercuroso / Mercúrico</td>
+                        </tr>
+                        <tr>
+                            <td>Au⁺ / Au³⁺</td>
+                            <td>Ouro(I) / Ouro(III)</td>
+                            <td>Auroso / Áurico</td>
+                        </tr>
+                        <tr>
+                            <td>Cr²⁺ / Cr³⁺</td>
+                            <td>Cromo(II) / Cromo(III)</td>
+                            <td>Cromoso / Crômico</td>
+                        </tr>
+                        <tr>
+                            <td>Mn²⁺ / Mn³⁺ / Mn⁴⁺ / Mn⁷⁺</td>
+                            <td>Manganês(II) / Manganês(III) / Manganês(IV) / Manganês(VII)</td>
+                            <td>Manganoso / Mangânico / - / -</td>
+                        </tr>
+                        <tr>
+                            <td>Co²⁺ / Co³⁺</td>
+                            <td>Cobalto(II) / Cobalto(III)</td>
+                            <td>Cobaltoso / Cobáltico</td>
+                        </tr>
+                        <tr>
+                            <td>Ni²⁺ / Ni³⁺</td>
+                            <td>Níquel(II) / Níquel(III)</td>
+                            <td>Niqueloso / Niquélico</td>
+                        </tr>
+                        <tr>
+                            <td>V²⁺ / V³⁺ / V⁴⁺ / V⁵⁺</td>
+                            <td>Vanádio(II) / Vanádio(III) / Vanádio(IV) / Vanádio(V)</td>
+                            <td>- / - / - / -</td>
+                        </tr>
+                        <tr>
+                            <td>Ti³⁺ / Ti⁴⁺</td>
+                            <td>Titânio(III) / Titânio(IV)</td>
+                            <td>- / -</td>
+                        </tr>
+                    </table>
+                    <h4>Cátions Poliatômicos</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                        </tr>
+                        <tr>
+                            <td>NH₄⁺</td>
+                            <td>Amônio</td>
+                        </tr>
+                        <tr>
+                            <td>H₃O⁺</td>
+                            <td>Hidrônio (ou Hidroxônio)</td>
+                        </tr>
+                        <tr>
+                            <td>N₂H₅⁺</td>
+                            <td>Hidrazínio</td>
+                        </tr>
+                        <tr>
+                            <td>NO⁺</td>
+                            <td>Nitrosila</td>
+                        </tr>
+                        <tr>
+                            <td>NO₂⁺</td>
+                            <td>Nitrila</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Seção de Ânions (Mantida a versão mais completa) -->
+            <div class="rules-section" id="anions-section">
+                <div class="rule-card">
+                    <h3 class="anion">➖ Tabela Expansiva de Ânions</h3>
+                    <h4>Ânions Monoatômicos (Sufixo: -eto)</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Grupo</th>
+                        </tr>
+                        <tr>
+                            <td>H⁻</td>
+                            <td>Hidreto</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>F⁻, Cl⁻, Br⁻, I⁻</td>
+                            <td>Fluoreto, Cloreto, Brometo, Iodeto</td>
+                            <td>Halogênios (17)</td>
+                        </tr>
+                        <tr>
+                            <td>O²⁻</td>
+                            <td>Óxido</td>
+                            <td>Calcogênios (16)</td>
+                        </tr>
+                        <tr>
+                            <td>S²⁻</td>
+                            <td>Sulfeto</td>
+                            <td>Calcogênios (16)</td>
+                        </tr>
+                        <tr>
+                            <td>Se²⁻</td>
+                            <td>Seleneto</td>
+                            <td>Calcogênios (16)</td>
+                        </tr>
+                        <tr>
+                            <td>Te²⁻</td>
+                            <td>Telureto</td>
+                            <td>Calcogênios (16)</td>
+                        </tr>
+                        <tr>
+                            <td>N³⁻</td>
+                            <td>Nitreto</td>
+                            <td>Nitrogenoides (15)</td>
+                        </tr>
+                        <tr>
+                            <td>P³⁻</td>
+                            <td>Fosfeto</td>
+                            <td>Nitrogenoides (15)</td>
+                        </tr>
+                        <tr>
+                            <td>As³⁻</td>
+                            <td>Arseneto</td>
+                            <td>Nitrogenoides (15)</td>
+                        </tr>
+                        <tr>
+                            <td>C⁴⁻</td>
+                            <td>Carbeto (ou Carboneto)</td>
+                            <td>Carbonoides (14)</td>
+                        </tr>
+                        <tr>
+                            <td>Si⁴⁻</td>
+                            <td>Siliceto</td>
+                            <td>Carbonoides (14)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Ânions Poliatômicos Especiais</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Observação</th>
+                        </tr>
+                        <tr>
+                            <td>OH⁻</td>
+                            <td>Hidróxido</td>
+                            <td>Ânion característico das bases</td>
+                        </tr>
+                        <tr>
+                            <td>CN⁻</td>
+                            <td>Cianeto</td>
+                            <td>Exceção que mantém o sufixo -eto</td>
+                        </tr>
+                        <tr>
+                            <td>OCN⁻</td>
+                            <td>Cianato</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>SCN⁻</td>
+                            <td>Tiocianato</td>
+                            <td>"Tio" indica a substituição de um O por S</td>
+                        </tr>
+                        <tr>
+                            <td>CNO⁻</td>
+                            <td>Cianito</td>
+                            <td>Isômero do cianato</td>
+                        </tr>
+                        <tr>
+                            <td>O₂²⁻</td>
+                            <td>Peróxido</td>
+                            <td>Íon com ligação covalente O-O e carga -2</td>
+                        </tr>
+                        <tr>
+                            <td>S₂O₃²⁻</td>
+                            <td>Tiossulfato</td>
+                            <td>"Tio" indica substituição de um O por S</td>
+                        </tr>
+                        <tr>
+                            <td>CS₃²⁻</td>
+                            <td>Tiocarbonato</td>
+                            <td>"Tio" indica substituição de O por S no carbonato</td>
+                        </tr>
+                        <tr>
+                            <td>B₄O₇²⁻</td>
+                            <td>Tetraborato</td>
+                            <td>Encontrado no bórax (Na₂B₄O₇·10H₂O)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Nomenclatura Sistemática de Oxiânions</h4>
+                    <p>A nomenclatura da maioria dos oxiânions segue um padrão relativo ao número de átomos de oxigênio.
+                        Define-se um ânion "padrão" para cada elemento, que recebe o sufixo <strong>-ATO</strong>. Os
+                        demais nomes são derivados a partir dele.</p>
+                    <div class="example-box">
+                        <strong>Série Sistemática dos Oxiânions dos Halogênios (Padrões: ClO₃⁻, BrO₃⁻, IO₃⁻):</strong>
+                        <table>
+                            <tr>
+                                <th>Nº de Oxigênios</th>
+                                <th>Prefixo/Sufixo</th>
+                                <th>Ex. Cloro</th>
+                                <th>Ex. Bromo</th>
+                                <th>Ex. Iodo</th>
+                                <th>Nome (ex: Cloro)</th>
+                            </tr>
+                            <tr>
+                                <td>1 a mais que o padrão</td>
+                                <td><strong>per</strong>...<strong>ato</strong></td>
+                                <td>ClO₄⁻</td>
+                                <td>BrO₄⁻</td>
+                                <td>IO₄⁻</td>
+                                <td>Perclorato</td>
+                            </tr>
+                            <tr>
+                                <td>Padrão</td>
+                                <td>...<strong>ato</strong></td>
+                                <td>ClO₃⁻</td>
+                                <td>BrO₃⁻</td>
+                                <td>IO₃⁻</td>
+                                <td>Clorato</td>
+                            </tr>
+                            <tr>
+                                <td>1 a menos que o padrão</td>
+                                <td>...<strong>ito</strong></td>
+                                <td>ClO₂⁻</td>
+                                <td>BrO₂⁻</td>
+                                <td>IO₂⁻</td>
+                                <td>Clorito</td>
+                            </tr>
+                            <tr>
+                                <td>2 a menos que o padrão</td>
+                                <td><strong>hipo</strong>...<strong>ito</strong></td>
+                                <td>ClO⁻</td>
+                                <td>BrO⁻</td>
+                                <td>IO⁻</td>
+                                <td>Hipoclorito</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <h4>Principais Oxiânions (Padrão: -ato)</h4>
+                    <table>
+                        <tr>
+                            <th>Elemento Central</th>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                        </tr>
+                        <tr>
+                            <td>Nitrogênio</td>
+                            <td>NO₃⁻</td>
+                            <td>Nitrato</td>
+                            <td>NO₂⁻</td>
+                            <td>Nitrito</td>
+                        </tr>
+                        <tr>
+                            <td>Enxofre</td>
+                            <td>SO₄²⁻</td>
+                            <td>Sulfato</td>
+                            <td>SO₃²⁻</td>
+                            <td>Sulfito</td>
+                        </tr>
+                        <tr>
+                            <td>Fósforo</td>
+                            <td>PO₄³⁻</td>
+                            <td>Fosfato</td>
+                            <td>PO₃³⁻</td>
+                            <td>Fosfito</td>
+                        </tr>
+                        <tr>
+                            <td>Carbono</td>
+                            <td>CO₃²⁻</td>
+                            <td>Carbonato</td>
+                            <td colspan="2"><em>(Não possui forma "-ito" comum)</em></td>
+                        </tr>
+                        <tr>
+                            <td>Manganês</td>
+                            <td>MnO₄⁻</td>
+                            <td>Permanganato</td>
+                            <td>MnO₄²⁻</td>
+                            <td>Manganato</td>
+                        </tr>
+                        <tr>
+                            <td>Cromo</td>
+                            <td>CrO₄²⁻</td>
+                            <td>Cromato</td>
+                            <td>Cr₂O₇²⁻</td>
+                            <td>Dicromato</td>
+                        </tr>
+                        <tr>
+                            <td>Boro</td>
+                            <td>BO₃³⁻</td>
+                            <td>Borato</td>
+                            <td>B₄O₇²⁻</td>
+                            <td>Tetraborato</td>
+                        </tr>
+                        <tr>
+                            <td>Arsênio</td>
+                            <td>AsO₄³⁻</td>
+                            <td>Arsenato</td>
+                            <td>AsO₃³⁻</td>
+                            <td>Arsenito</td>
+                        </tr>
+                        <tr>
+                            <td>Cloro</td>
+                            <td>ClO₄⁻</td>
+                            <td>Perclorato</td>
+                            <td>ClO₃⁻</td>
+                            <td>Clorato</td>
+                        </tr>
+                        <tr>
+                            <td>Cloro</td>
+                            <td>ClO₂⁻</td>
+                            <td>Clorito</td>
+                            <td>ClO⁻</td>
+                            <td>Hipoclorito</td>
+                        </tr>
+                        <tr>
+                            <td>Bromo</td>
+                            <td>BrO₄⁻</td>
+                            <td>Perbromato</td>
+                            <td>BrO₃⁻</td>
+                            <td>Bromato</td>
+                        </tr>
+                        <tr>
+                            <td>Bromo</td>
+                            <td>BrO₂⁻</td>
+                            <td>Bromito</td>
+                            <td>BrO⁻</td>
+                            <td>Hipobromito</td>
+                        </tr>
+                        <tr>
+                            <td>Iodo</td>
+                            <td>IO₄⁻</td>
+                            <td>Periodato</td>
+                            <td>IO₃⁻</td>
+                            <td>Iodato</td>
+                        </tr>
+                        <tr>
+                            <td>Iodo</td>
+                            <td>IO₂⁻</td>
+                            <td>Iodito</td>
+                            <td>IO⁻</td>
+                            <td>Hipoiodito</td>
+                        </tr>
+                        <tr>
+                            <td>Vanádio</td>
+                            <td>VO₄³⁻</td>
+                            <td>Vanadato</td>
+                            <td>VO₃⁻</td>
+                            <td>Metavanadato</td>
+                        </tr>
+                        <tr>
+                            <td>Tungstênio</td>
+                            <td>WO₄²⁻</td>
+                            <td>Wolframato</td>
+                            <td colspan="2">-</td>
+                        </tr>
+                        <tr>
+                            <td>Molibdênio</td>
+                            <td>MoO₄²⁻</td>
+                            <td>Molibdato</td>
+                            <td colspan="2">-</td>
+                        </tr>
+                    </table>
+                    <h4>Ânions de Ácidos Orgânicos</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Derivado do Ácido</th>
+                        </tr>
+                        <tr>
+                            <td>CH₃COO⁻ (ou C₂H₃O₂⁻)</td>
+                            <td>Acetato</td>
+                            <td>Ácido Acético</td>
+                        </tr>
+                        <tr>
+                            <td>C₂O₄²⁻</td>
+                            <td>Oxalato</td>
+                            <td>Ácido Oxálico</td>
+                        </tr>
+                        <tr>
+                            <td>C₆H₅COO⁻</td>
+                            <td>Benzoato</td>
+                            <td>Ácido Benzoico</td>
+                        </tr>
+                        <tr>
+                            <td>CH₃CH₂COO⁻</td>
+                            <td>Propionato</td>
+                            <td>Ácido Propiônico</td>
+                        </tr>
+                    </table>
+                    <h4>Hidrogeno-ânions (Sais Ácidos)</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome Sistemático</th>
+                            <th>Nome Comum</th>
+                        </tr>
+                        <tr>
+                            <td>HCO₃⁻</td>
+                            <td>Hidrogenocarbonato</td>
+                            <td>Bicarbonato</td>
+                        </tr>
+                        <tr>
+                            <td>HSO₄⁻</td>
+                            <td>Hidrogenossulfato</td>
+                            <td>Bissulfato</td>
+                        </tr>
+                        <tr>
+                            <td>HSO₃⁻</td>
+                            <td>Hidrogenossulfito</td>
+                            <td>Bissulfito</td>
+                        </tr>
+                        <tr>
+                            <td>H₂PO₄⁻</td>
+                            <td>Di-hidrogenofosfato</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>HPO₄²⁻</td>
+                            <td>Hidrogenofosfato</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>H₂AsO₄⁻</td>
+                            <td>Di-hidrogenoarsenato</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>HAsO₄²⁻</td>
+                            <td>Hidrogenoarsenato</td>
+                            <td>-</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Seção de Ácidos (Mantida a versão mais completa) -->
+            <div class="rules-section" id="acids-section">
+                <div class="rule-card">
+                    <h3 class="acid">🧪 Nomenclatura e Tabela de Ácidos</h3>
+                    <p>A nomenclatura de um ácido é diretamente derivada do nome do ânion que ele forma ao se ionizar em
+                        água. A conversão de nomes é a chave para entender toda a sistemática.</p>
+                    <h4>Regra de Ouro: Conversão Ânion → Ácido</h4>
+                    <div class="example-box">
+                        <table>
+                            <tr>
+                                <th>Sufixo do ÂNION</th>
+                                <th></th>
+                                <th>Sufixo do ÁCIDO</th>
+                                <th>Exemplo (Ânion → Ácido)</th>
+                            </tr>
+                            <tr style="background-color: #e3f2fd;">
+                                <td>-ETO</td>
+                                <td>→</td>
+                                <td>-ÍDRICO</td>
+                                <td>Clor<strong>eto</strong> (Cl⁻) → Ácido Clor<strong>ídrico</strong> (HCl)</td>
+                            </tr>
+                            <tr style="background-color: #e8f5e9;">
+                                <td>-ITO</td>
+                                <td>→</td>
+                                <td>-OSO</td>
+                                <td>Sulf<strong>ito</strong> (SO₃²⁻) → Ácido Sulfur<strong>oso</strong> (H₂SO₃)</td>
+                            </tr>
+                            <tr style="background-color: #fff3e0;">
+                                <td>-ATO</td>
+                                <td>→</td>
+                                <td>-ICO</td>
+                                <td>Sulf<strong>ato</strong> (SO₄²⁻) → Ácido Sulfúr<strong>ico</strong> (H₂SO₄)</td>
+                            </tr>
+                        </table>
+                        <div class="memorization-tips">
+                            <h4>💡 Dica Mnemônica</h4>
+                            <p>Mosqu<strong>ito</strong> teim<strong>oso</strong>, te m<strong>ato</strong> te
+                                p<strong>ico</strong>, te m<strong>eto</strong> no v<strong>ídrico</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <h4>Hidrácidos (Ânions terminados em -ETO)</h4>
+                    <table>
+                        <tr>
+                            <th>Ânion (Nome)</th>
+                            <th>Ácido (Fórmula)</th>
+                            <th>Nome do Ácido</th>
+                            <th>Força</th>
+                        </tr>
+                        <tr>
+                            <td>Fluoreto (F⁻)</td>
+                            <td>HF</td>
+                            <td>Ácido Fluorídrico</td>
+                            <td>Moderado</td>
+                        </tr>
+                        <tr>
+                            <td>Cloreto (Cl⁻)</td>
+                            <td>HCl</td>
+                            <td>Ácido Clorídrico</td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Brometo (Br⁻)</td>
+                            <td>HBr</td>
+                            <td>Ácido Bromídrico</td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Iodeto (I⁻)</td>
+                            <td>HI</td>
+                            <td>Ácido Iodídrico</td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Sulfeto (S²⁻)</td>
+                            <td>H₂S</td>
+                            <td>Ácido Sulfídrico</td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Seleneto (Se²⁻)</td>
+                            <td>H₂Se</td>
+                            <td>Ácido Selenídrico</td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Cianeto (CN⁻)</td>
+                            <td>HCN</td>
+                            <td>Ácido Cianídrico</td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Tiocianato (SCN⁻)</td>
+                            <td>HSCN</td>
+                            <td>Ácido Tiociânico</td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Cianito (CNO⁻)</td>
+                            <td>HCNO</td>
+                            <td>Ácido Cianítico</td>
+                            <td>Fraco</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Oxiácidos (Ânions terminados em -ATO ou -ITO)</h4>
+                    <p>A nomenclatura segue a mesma lógica da série dos oxiânions, apenas aplicando a conversão de
+                        sufixos.</p>
+                    <strong>Série Completa dos Oxiácidos dos Halogênios</strong>
+                    <table>
+                        <tr>
+                            <th>Prefixo/Sufixo do Ácido</th>
+                            <th>Ex. Cloro</th>
+                            <th>Ex. Bromo</th>
+                            <th>Ex. Iodo</th>
+                            <th>Força (Geral)</th>
+                        </tr>
+                        <tr>
+                            <td>Ácido <strong>Per</strong>...<strong>ico</strong></td>
+                            <td>HClO₄ (Perclórico)</td>
+                            <td>HBrO₄ (Perbrômico)</td>
+                            <td>HIO₄ (Periódico)</td>
+                            <td>Muito Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Ácido ...<strong>ico</strong></td>
+                            <td>HClO₃ (Clórico)</td>
+                            <td>HBrO₃ (Brômico)</td>
+                            <td>HIO₃ (Iódico)</td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Ácido ...<strong>oso</strong></td>
+                            <td>HClO₂ (Cloroso)</td>
+                            <td>HBrO₂ (Bromoso)</td>
+                            <td>HIO₂ (Iodoso)</td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Ácido <strong>Hipo</strong>...<strong>oso</strong></td>
+                            <td>HClO (Hipocloroso)</td>
+                            <td>HBrO (Hipobromoso)</td>
+                            <td>HIO (Hipoiodoso)</td>
+                            <td>Muito Fraco</td>
+                        </tr>
+                    </table>
+                    <strong>Principais Oxiácidos Adicionais:</strong>
+                    <table>
+                        <tr>
+                            <th>Ânion</th>
+                            <th>Ácido</th>
+                            <th>Nome do Ácido</th>
+                            <th>Força</th>
+                        </tr>
+                        <tr>
+                            <td>Sulf<strong>ato</strong> (SO₄²⁻)</td>
+                            <td>H₂SO₄</td>
+                            <td>Ácido Sulfúr<strong>ico</strong></td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Sulf<strong>ito</strong> (SO₃²⁻)</td>
+                            <td>H₂SO₃</td>
+                            <td>Ácido Sulfur<strong>oso</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Nitr<strong>ato</strong> (NO₃⁻)</td>
+                            <td>HNO₃</td>
+                            <td>Ácido Nítr<strong>ico</strong></td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Nitr<strong>ito</strong> (NO₂⁻)</td>
+                            <td>HNO₂</td>
+                            <td>Ácido Nitr<strong>oso</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Fosf<strong>ato</strong> (PO₄³⁻)</td>
+                            <td>H₃PO₄</td>
+                            <td>Ácido Fosfór<strong>ico</strong></td>
+                            <td>Moderado</td>
+                        </tr>
+                        <tr>
+                            <td>Fosf<strong>ito</strong> (PO₃³⁻)</td>
+                            <td>H₃PO₃</td>
+                            <td>Ácido Fosfor<strong>oso</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Carbon<strong>ato</strong> (CO₃²⁻)</td>
+                            <td>H₂CO₃</td>
+                            <td>Ácido Carbôn<strong>ico</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Bor<strong>ato</strong> (BO₃³⁻)</td>
+                            <td>H₃BO₃</td>
+                            <td>Ácido Bóric<strong>o</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Oxal<strong>ato</strong> (C₂O₄²⁻)</td>
+                            <td>H₂C₂O₄</td>
+                            <td>Ácido Oxálic<strong>o</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Permangan<strong>ato</strong> (MnO₄⁻)</td>
+                            <td>HMnO₄</td>
+                            <td>Ácido Permangân<strong>ico</strong></td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Crom<strong>ato</strong> (CrO₄²⁻)</td>
+                            <td>H₂CrO₄</td>
+                            <td>Ácido Crôm<strong>ico</strong></td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Dicrom<strong>ato</strong> (Cr₂O₇²⁻)</td>
+                            <td>H₂Cr₂O₇</td>
+                            <td>Ácido Dicrôm<strong>ico</strong></td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Cian<strong>ato</strong> (OCN⁻)</td>
+                            <td>HOCN</td>
+                            <td>Ácido Ciân<strong>ico</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Cian<strong>ito</strong> (CNO⁻)</td>
+                            <td>HCNO</td>
+                            <td>Ácido Cianít<strong>ico</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Acet<strong>ato</strong> (CH₃COO⁻)</td>
+                            <td>CH₃COOH</td>
+                            <td>Ácido Acét<strong>ico</strong></td>
+                            <td>Fraco (Orgânico)</td>
+                        </tr>
+                        <tr>
+                            <td>Arsen<strong>ato</strong> (AsO₄³⁻)</td>
+                            <td>H₃AsO₄</td>
+                            <td>Ácido Arsên<strong>ico</strong></td>
+                            <td>Forte</td>
+                        </tr>
+                        <tr>
+                            <td>Arsen<strong>ito</strong> (AsO₃³⁻)</td>
+                            <td>H₃AsO₃</td>
+                            <td>Ácido Arsen<strong>oso</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                        <tr>
+                            <td>Vanad<strong>ato</strong> (VO₄³⁻)</td>
+                            <td>H₃VO₄</td>
+                            <td>Ácido Vanád<strong>ico</strong></td>
+                            <td>Fraco</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Seção de Bases (Mantida a versão mais completa) -->
+            <div class="rules-section" id="bases-section">
+                <div class="rule-card">
+                    <h3 class="base">💜 Tabela Expansiva de Bases</h3>
+                    <h4>Bases dos Metais Alcalinos (Grupo 1) - Todas Fortes e Solúveis</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Nome Comum / Aplicação</th>
+                        </tr>
+                        <tr>
+                            <td>LiOH</td>
+                            <td>Hidróxido de lítio</td>
+                            <td>Absorvedor de CO₂, graxas.</td>
+                        </tr>
+                        <tr>
+                            <td>NaOH</td>
+                            <td>Hidróxido de sódio</td>
+                            <td>Soda cáustica, produção de sabão e papel.</td>
+                        </tr>
+                        <tr>
+                            <td>KOH</td>
+                            <td>Hidróxido de potássio</td>
+                            <td>Potassa cáustica, produção de sabões moles.</td>
+                        </tr>
+                        <tr>
+                            <td>RbOH</td>
+                            <td>Hidróxido de rubídio</td>
+                            <td>Usado em fotocélulas e vidros especiais.</td>
+                        </tr>
+                        <tr>
+                            <td>CsOH</td>
+                            <td>Hidróxido de césio</td>
+                            <td>Base mais forte entre os metais alcalinos, usado em pesquisas.</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Bases dos Metais Alcalino-Terrosos (Grupo 2)</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Força / Solubilidade</th>
+                            <th>Aplicação</th>
+                        </tr>
+                        <tr>
+                            <td>Be(OH)₂</td>
+                            <td>Hidróxido de berílio</td>
+                            <td>Anfótero / Insolúvel</td>
+                            <td>Usado em cerâmicas e ligas metálicas.</td>
+                        </tr>
+                        <tr>
+                            <td>Mg(OH)₂</td>
+                            <td>Hidróxido de magnésio</td>
+                            <td>Fraca / Pouco solúvel</td>
+                            <td>Antiácido e laxante (Leite de Magnésia).</td>
+                        </tr>
+                        <tr>
+                            <td>Ca(OH)₂</td>
+                            <td>Hidróxido de cálcio</td>
+                            <td>Forte / Pouco solúvel</td>
+                            <td>Cal hidratada, argamassa, tratamento de água.</td>
+                        </tr>
+                        <tr>
+                            <td>Sr(OH)₂</td>
+                            <td>Hidróxido de estrôncio</td>
+                            <td>Forte / Solúvel</td>
+                            <td>Refino de açúcar, pigmentos.</td>
+                        </tr>
+                        <tr>
+                            <td>Ba(OH)₂</td>
+                            <td>Hidróxido de bário</td>
+                            <td>Forte / Solúvel</td>
+                            <td>Produção de vidro e cerâmica, veneno.</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Outras Bases - Predominantemente Fracas e Insolúveis</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Observação</th>
+                        </tr>
+                        <tr>
+                            <td>NH₄OH</td>
+                            <td>Hidróxido de amônio</td>
+                            <td>Base fraca e volátil. Única base comum sem metal.</td>
+                        </tr>
+                        <tr>
+                            <td>Fe(OH)₂</td>
+                            <td>Hidróxido de ferro(II)</td>
+                            <td>Precipitado de cor verde-claro.</td>
+                        </tr>
+                        <tr>
+                            <td>Fe(OH)₃</td>
+                            <td>Hidróxido de ferro(III)</td>
+                            <td>Precipitado de cor marrom-avermelhada (ferrugem).</td>
+                        </tr>
+                        <tr>
+                            <td>Cu(OH)₂</td>
+                            <td>Hidróxido de cobre(II)</td>
+                            <td>Precipitado de cor azul-celeste.</td>
+                        </tr>
+                        <tr>
+                            <td>Al(OH)₃</td>
+                            <td>Hidróxido de alumínio</td>
+                            <td>Anfótero. Precipitado branco gelatinoso. Usado como antiácido.</td>
+                        </tr>
+                        <tr>
+                            <td>Zn(OH)₂</td>
+                            <td>Hidróxido de zinco</td>
+                            <td>Anfótero. Precipitado branco.</td>
+                        </tr>
+                        <tr>
+                            <td>Ni(OH)₂</td>
+                            <td>Hidróxido de níquel(II)</td>
+                            <td>Precipitado verde.</td>
+                        </tr>
+                        <tr>
+                            <td>Co(OH)₂</td>
+                            <td>Hidróxido de cobalto(II)</td>
+                            <td>Precipitado rosa.</td>
+                        </tr>
+                        <tr>
+                            <td>Cr(OH)₃</td>
+                            <td>Hidróxido de cromo(III)</td>
+                            <td>Anfótero. Precipitado verde.</td>
+                        </tr>
+                        <tr>
+                            <td>Mn(OH)₂</td>
+                            <td>Hidróxido de manganês(II)</td>
+                            <td>Precipitado branco/rosado.</td>
+                        </tr>
+                        <tr>
+                            <td>La(OH)₃</td>
+                            <td>Hidróxido de lantânio</td>
+                            <td>Usado em vidros ópticos.</td>
+                        </tr>
+                        <tr>
+                            <td>Ce(OH)₃</td>
+                            <td>Hidróxido de cério</td>
+                            <td>Usado em catalisadores e vidros especiais.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Seção de Óxidos (Mantida a versão mais completa) -->
+            <div class="rules-section" id="oxides-section">
+                <div class="rule-card">
+                    <h3 class="oxide">🟠 Tabela Expansiva de Óxidos</h3>
+                    <h4>Óxidos Básicos (Metal com baixo NOx + Oxigênio → formam bases)</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Reação com Água</th>
+                        </tr>
+                        <tr>
+                            <td>Li₂O</td>
+                            <td>Óxido de lítio</td>
+                            <td>→ 2 LiOH (Hidróxido de lítio)</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂O</td>
+                            <td>Óxido de sódio</td>
+                            <td>→ 2 NaOH (Hidróxido de sódio)</td>
+                        </tr>
+                        <tr>
+                            <td>K₂O</td>
+                            <td>Óxido de potássio</td>
+                            <td>→ 2 KOH (Hidróxido de potássio)</td>
+                        </tr>
+                        <tr>
+                            <td>Rb₂O</td>
+                            <td>Óxido de rubídio</td>
+                            <td>→ 2 RbOH (Hidróxido de rubídio)</td>
+                        </tr>
+                        <tr>
+                            <td>Cs₂O</td>
+                            <td>Óxido de césio</td>
+                            <td>→ 2 CsOH (Hidróxido de césio)</td>
+                        </tr>
+                        <tr>
+                            <td>CaO</td>
+                            <td>Óxido de cálcio</td>
+                            <td>→ Ca(OH)₂ (Hidróxido de cálcio) - Cal virgem</td>
+                        </tr>
+                        <tr>
+                            <td>MgO</td>
+                            <td>Óxido de magnésio</td>
+                            <td>→ Mg(OH)₂ (Hidróxido de magnésio)</td>
+                        </tr>
+                        <tr>
+                            <td>SrO</td>
+                            <td>Óxido de estrôncio</td>
+                            <td>→ Sr(OH)₂ (Hidróxido de estrôncio)</td>
+                        </tr>
+                        <tr>
+                            <td>BaO</td>
+                            <td>Óxido de bário</td>
+                            <td>→ Ba(OH)₂ (Hidróxido de bário)</td>
+                        </tr>
+                        <tr>
+                            <td>CuO</td>
+                            <td>Óxido de cobre(II)</td>
+                            <td>(Não reage com água)</td>
+                        </tr>
+                        <tr>
+                            <td>FeO</td>
+                            <td>Óxido de ferro(II)</td>
+                            <td>(Não reage com água)</td>
+                        </tr>
+                        <tr>
+                            <td>Fe₂O₃</td>
+                            <td>Óxido de ferro(III)</td>
+                            <td>(Não reage com água) - Ferrugem</td>
+                        </tr>
+                        <tr>
+                            <td>NiO</td>
+                            <td>Óxido de níquel(II)</td>
+                            <td>(Não reage com água)</td>
+                        </tr>
+                        <tr>
+                            <td>CoO</td>
+                            <td>Óxido de cobalto(II)</td>
+                            <td>(Não reage com água)</td>
+                        </tr>
+                        <tr>
+                            <td>VO</td>
+                            <td>Monóxido de vanádio</td>
+                            <td>(Não reage com água)</td>
+                        </tr>
+                        <tr>
+                            <td>V₂O₃</td>
+                            <td>Trióxido de divanádio</td>
+                            <td>(Não reage com água)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Óxidos Ácidos ou Anidridos (Ametal + Oxigênio → formam ácidos)</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Reação com Água (Anidrido de...)</th>
+                        </tr>
+                        <tr>
+                            <td>CO₂</td>
+                            <td>Dióxido de carbono</td>
+                            <td>→ H₂CO₃ (Ácido carbônico)</td>
+                        </tr>
+                        <tr>
+                            <td>CO</td>
+                            <td>Monóxido de carbono</td>
+                            <td>Não forma ácido (óxido neutro)</td>
+                        </tr>
+                        <tr>
+                            <td>SO₂</td>
+                            <td>Dióxido de enxofre</td>
+                            <td>→ H₂SO₃ (Ácido sulfuroso) - Chuva ácida</td>
+                        </tr>
+                        <tr>
+                            <td>SO₃</td>
+                            <td>Trióxido de enxofre</td>
+                            <td>→ H₂SO₄ (Ácido sulfúrico) - Chuva ácida</td>
+                        </tr>
+                        <tr>
+                            <td>N₂O₃</td>
+                            <td>Trióxido de dinitrogênio</td>
+                            <td>→ 2 HNO₂ (Ácido nitroso)</td>
+                        </tr>
+                        <tr>
+                            <td>NO₂ / N₂O₄</td>
+                            <td>Dióxido de nitrogênio</td>
+                            <td>→ HNO₃ + HNO₂ (Ácido nítrico + Ácido nitroso)</td>
+                        </tr>
+                        <tr>
+                            <td>N₂O₅</td>
+                            <td>Pentóxido de dinitrogênio</td>
+                            <td>→ 2 HNO₃ (Ácido nítrico)</td>
+                        </tr>
+                        <tr>
+                            <td>P₄O₆</td>
+                            <td>Hexaóxido de tetrafósforo</td>
+                            <td>→ 4 H₃PO₃ (Ácido fosforoso)</td>
+                        </tr>
+                        <tr>
+                            <td>P₄O₁₀</td>
+                            <td>Decaóxido de tetrafósforo</td>
+                            <td>→ 4 H₃PO₄ (Ácido fosfórico)</td>
+                        </tr>
+                        <tr>
+                            <td>Cl₂O</td>
+                            <td>Monóxido de dicloro</td>
+                            <td>→ 2 HClO (Ácido hipocloroso)</td>
+                        </tr>
+                        <tr>
+                            <td>Cl₂O₃</td>
+                            <td>Trióxido de dicloro</td>
+                            <td>→ 2 HClO₂ (Ácido cloroso)</td>
+                        </tr>
+                        <tr>
+                            <td>Cl₂O₅</td>
+                            <td>Pentóxido de dicloro</td>
+                            <td>→ 2 HClO₃ (Ácido clórico)</td>
+                        </tr>
+                        <tr>
+                            <td>Cl₂O₇</td>
+                            <td>Heptóxido de dicloro</td>
+                            <td>→ 2 HClO₄ (Ácido perclórico)</td>
+                        </tr>
+                        <tr>
+                            <td>Mn₂O₇</td>
+                            <td>Heptaóxido de dimanganês</td>
+                            <td>→ 2 HMnO₄ (Ácido permangânico)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Óxidos Anfóteros (Comportamento Dual)</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Observação</th>
+                        </tr>
+                        <tr>
+                            <td>BeO</td>
+                            <td>Óxido de berílio</td>
+                            <td>Reage com ácidos e bases fortes.</td>
+                        </tr>
+                        <tr>
+                            <td>Al₂O₃</td>
+                            <td>Óxido de alumínio</td>
+                            <td>Alumina. Reage com ácidos e bases fortes.</td>
+                        </tr>
+                        <tr>
+                            <td>ZnO</td>
+                            <td>Óxido de zinco</td>
+                            <td>Pó branco usado em pomadas. Reage com ácidos e bases fortes.</td>
+                        </tr>
+                        <tr>
+                            <td>PbO</td>
+                            <td>Óxido de chumbo(II)</td>
+                            <td>Litargírio. Reage com ácidos e bases.</td>
+                        </tr>
+                        <tr>
+                            <td>SnO</td>
+                            <td>Óxido de estanho(II)</td>
+                            <td>Reage com ácidos e bases.</td>
+                        </tr>
+                        <tr>
+                            <td>SnO₂</td>
+                            <td>Óxido de estanho(IV)</td>
+                            <td>Cassiterita. Reage com ácidos e bases.</td>
+                        </tr>
+                        <tr>
+                            <td>Cr₂O₃</td>
+                            <td>Óxido de cromo(III)</td>
+                            <td>Reage com ácidos e bases.</td>
+                        </tr>
+                        <tr>
+                            <td>MnO₂</td>
+                            <td>Óxido de manganês(IV)</td>
+                            <td>Reage com ácidos e bases.</td>
+                        </tr>
+                        <tr>
+                            <td>VO₂</td>
+                            <td>Dióxido de vanádio</td>
+                            <td>Reage com ácidos e bases.</td>
+                        </tr>
+                        <tr>
+                            <td>V₂O₅</td>
+                            <td>Pentóxido de divanádio</td>
+                            <td>Anfótero, com forte caráter ácido.</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Óxidos Neutros e Peróxidos</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Classificação e Observação</th>
+                        </tr>
+                        <tr>
+                            <td>CO</td>
+                            <td>Monóxido de carbono</td>
+                            <td>Neutro. Não reage com água, ácidos ou bases. Tóxico.</td>
+                        </tr>
+                        <tr>
+                            <td>NO</td>
+                            <td>Monóxido de nitrogênio</td>
+                            <td>Neutro. Poluente atmosférico.</td>
+                        </tr>
+                        <tr>
+                            <td>N₂O</td>
+                            <td>Óxido nitroso</td>
+                            <td>Neutro. Gás hilariante, usado como anestésico.</td>
+                        </tr>
+                        <tr>
+                            <td>H₂O₂</td>
+                            <td>Peróxido de hidrogênio</td>
+                            <td>Peróxido. Água oxigenada. Instável.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂O₂</td>
+                            <td>Peróxido de sódio</td>
+                            <td>Peróxido. Forte agente oxidante.</td>
+                        </tr>
+                        <tr>
+                            <td>BaO₂</td>
+                            <td>Peróxido de bário</td>
+                            <td>Peróxido. Usado na produção de água oxigenada.</td>
+                        </tr>
+                        <tr>
+                            <td>CaO₂</td>
+                            <td>Peróxido de cálcio</td>
+                            <td>Peróxido. Usado em suplementos de oxigênio.</td>
+                        </tr>
+                        <tr>
+                            <td>OF₂</td>
+                            <td>Difluoreto de oxigênio</td>
+                            <td>Fluoreto de oxigênio, não é um óxido típico.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Seção de Sais (Mantida a versão mais completa) -->
+            <div class="rules-section" id="salts-section">
+                <div class="rule-card">
+                    <h3 class="salt">🧂 Tabela Expansiva de Sais</h3>
+                    <h4>Sais de Haletos (Ânions do Grupo 17)</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Solubilidade em Água</th>
+                            <th>Aplicação / Observação</th>
+                        </tr>
+                        <tr>
+                            <td>NaCl</td>
+                            <td>Cloreto de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Sal de cozinha.</td>
+                        </tr>
+                        <tr>
+                            <td>KCl</td>
+                            <td>Cloreto de potássio</td>
+                            <td>Solúvel</td>
+                            <td>Fertilizante, substituto do sal de cozinha.</td>
+                        </tr>
+                        <tr>
+                            <td>FeCl₃</td>
+                            <td>Cloreto de ferro(III)</td>
+                            <td>Solúvel</td>
+                            <td>Coagulante no tratamento de água.</td>
+                        </tr>
+                        <tr>
+                            <td>AgCl</td>
+                            <td>Cloreto de prata</td>
+                            <td>Insolúvel</td>
+                            <td>Precipitado branco, usado em eletroquímica.</td>
+                        </tr>
+                        <tr>
+                            <td>PbCl₂</td>
+                            <td>Cloreto de chumbo(II)</td>
+                            <td>Pouco solúvel</td>
+                            <td>Precipitado branco.</td>
+                        </tr>
+                        <tr>
+                            <td>NaF</td>
+                            <td>Fluoreto de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Adicionado a cremes dentais para prevenir cáries.</td>
+                        </tr>
+                        <tr>
+                            <td>CaF₂</td>
+                            <td>Fluoreto de cálcio</td>
+                            <td>Insolúvel</td>
+                            <td>Mineral fluorita.</td>
+                        </tr>
+                        <tr>
+                            <td>KI</td>
+                            <td>Iodeto de potássio</td>
+                            <td>Solúvel</td>
+                            <td>Adicionado ao sal de cozinha para prevenir bócio.</td>
+                        </tr>
+                        <tr>
+                            <td>AgBr</td>
+                            <td>Brometo de prata</td>
+                            <td>Insolúvel</td>
+                            <td>Usado em filmes fotográficos.</td>
+                        </tr>
+                        <tr>
+                            <td>AgI</td>
+                            <td>Iodeto de prata</td>
+                            <td>Insolúvel</td>
+                            <td>Usado em fotografia e semeadura de nuvens.</td>
+                        </tr>
+                        <tr>
+                            <td>SnCl₂</td>
+                            <td>Cloreto de estanho(II)</td>
+                            <td>Solúvel</td>
+                            <td>Redutor em processos químicos.</td>
+                        </tr>
+                        <tr>
+                            <td>SnCl₄</td>
+                            <td>Cloreto de estanho(IV)</td>
+                            <td>Solúvel</td>
+                            <td>Catalisador em reações orgânicas.</td>
+                        </tr>
+                        <tr>
+                            <td>PbCl₄</td>
+                            <td>Cloreto de chumbo(IV)</td>
+                            <td>Solúvel</td>
+                            <td>Menos comum que PbCl₂.</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Sais de Sulfatos, Sulfetos e Sulfitos</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Solubilidade</th>
+                            <th>Nome Comum / Aplicação</th>
+                        </tr>
+                        <tr>
+                            <td>CaSO₄</td>
+                            <td>Sulfato de cálcio</td>
+                            <td>Pouco solúvel</td>
+                            <td>Gesso.</td>
+                        </tr>
+                        <tr>
+                            <td>BaSO₄</td>
+                            <td>Sulfato de bário</td>
+                            <td>Insolúvel</td>
+                            <td>Contraste para exames de raios-X.</td>
+                        </tr>
+                        <tr>
+                            <td>CuSO₄</td>
+                            <td>Sulfato de cobre(II)</td>
+                            <td>Solúvel</td>
+                            <td>Vitríolo azul, fungicida (calda bordalesa).</td>
+                        </tr>
+                        <tr>
+                            <td>MgSO₄</td>
+                            <td>Sulfato de magnésio</td>
+                            <td>Solúvel</td>
+                            <td>Sal de Epsom.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂SO₃</td>
+                            <td>Sulfito de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Conservante de alimentos.</td>
+                        </tr>
+                        <tr>
+                            <td>CdS</td>
+                            <td>Sulfeto de cádmio</td>
+                            <td>Insolúvel</td>
+                            <td>Pigmento amarelo.</td>
+                        </tr>
+                        <tr>
+                            <td>ZnS</td>
+                            <td>Sulfeto de zinco</td>
+                            <td>Insolúvel</td>
+                            <td>Pigmento branco, usado em luminosos.</td>
+                        </tr>
+                        <tr>
+                            <td>FeS</td>
+                            <td>Sulfeto de ferro(II)</td>
+                            <td>Insolúvel</td>
+                            <td>Mineral pirita.</td>
+                        </tr>
+                        <tr>
+                            <td>Ag₂S</td>
+                            <td>Sulfeto de prata</td>
+                            <td>Insolúvel</td>
+                            <td>Mancha escura na prata (reação com compostos sulfurosos).</td>
+                        </tr>
+                        <tr>
+                            <td>K₂S</td>
+                            <td>Sulfeto de potássio</td>
+                            <td>Solúvel</td>
+                            <td>Reagente de laboratório e cosméticos.</td>
+                        </tr>
+                        <tr>
+                            <td>K₂SO₃</td>
+                            <td>Sulfito de potássio</td>
+                            <td>Solúvel</td>
+                            <td>Aditivo alimentar e conservante (E225).</td>
+                        </tr>
+                        <tr>
+                            <td>K₂SO₄</td>
+                            <td>Sulfato de potássio</td>
+                            <td>Solúvel</td>
+                            <td>Fertilizante potássico sem cloreto.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂SO₄</td>
+                            <td>Sulfato de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Sal de Glauber, usado em detergentes.</td>
+                        </tr>
+                        <tr>
+                            <td>K₂S₂O₃</td>
+                            <td>Tiossulfato de potássio</td>
+                            <td>Solúvel</td>
+                            <td>Fertilizante líquido e agente de fixação em fotografia.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂S₂O₃</td>
+                            <td>Tiossulfato de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Hipossulfito, usado em fotografia.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂S</td>
+                            <td>Sulfeto de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Usado em curtimento de couro.</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Sais de Nitratos, Nitritos e Fosfatos</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Solubilidade</th>
+                            <th>Aplicação</th>
+                        </tr>
+                        <tr>
+                            <td>KNO₃</td>
+                            <td>Nitrato de potássio</td>
+                            <td>Solúvel</td>
+                            <td>Fertilizante, componente da pólvora (salitre).</td>
+                        </tr>
+                        <tr>
+                            <td>AgNO₃</td>
+                            <td>Nitrato de prata</td>
+                            <td>Solúvel</td>
+                            <td>Antisséptico (pedra-ume caustica).</td>
+                        </tr>
+                        <tr>
+                            <td>NH₄NO₃</td>
+                            <td>Nitrato de amônio</td>
+                            <td>Solúvel</td>
+                            <td>Fertilizante e explosivo.</td>
+                        </tr>
+                        <tr>
+                            <td>NaNO₂</td>
+                            <td>Nitrito de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Conservante de carnes (impede botulismo).</td>
+                        </tr>
+                        <tr>
+                            <td>Ca₃(PO₄)₂</td>
+                            <td>Fosfato de cálcio</td>
+                            <td>Insolúvel</td>
+                            <td>Principal componente mineral dos ossos e dentes.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₃PO₄</td>
+                            <td>Fosfato de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Aditivo alimentar e detergente.</td>
+                        </tr>
+                        <tr>
+                            <td>Ca(H₂PO₄)₂</td>
+                            <td>Fosfato monoácido de cálcio</td>
+                            <td>Solúvel</td>
+                            <td>Fertilizante (superfosfato simples).</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂HPO₄</td>
+                            <td>Fosfato dibásico de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Regulador de pH em alimentos.</td>
+                        </tr>
+                        <tr>
+                            <td>NaH₂PO₄</td>
+                            <td>Fosfato monobásico de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Regulador de pH em alimentos.</td>
+                        </tr>
+                        <tr>
+                            <td>Ag₃PO₄</td>
+                            <td>Fosfato de prata</td>
+                            <td>Insolúvel</td>
+                            <td>Precipitado amarelo.</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Sais de Carbonatos e Sais Ácidos</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Solubilidade</th>
+                            <th>Aplicação</th>
+                        </tr>
+                        <tr>
+                            <td>CaCO₃</td>
+                            <td>Carbonato de cálcio</td>
+                            <td>Insolúvel</td>
+                            <td>Mármore, calcário, conchas.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂CO₃</td>
+                            <td>Carbonato de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Barrilha ou soda, usado na fabricação de vidro.</td>
+                        </tr>
+                        <tr>
+                            <td>NaHCO₃</td>
+                            <td>Bicarbonato de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Sal ácido. Fermento, antiácido.</td>
+                        </tr>
+                        <tr>
+                            <td>K₂CO₃</td>
+                            <td>Carbonato de potássio</td>
+                            <td>Solúvel</td>
+                            <td>Usado na fabricação de sabão e vidro.</td>
+                        </tr>
+                        <tr>
+                            <td>MgCO₃</td>
+                            <td>Carbonato de magnésio</td>
+                            <td>Insolúvel</td>
+                            <td>Usado em antiácidos e suplementos.</td>
+                        </tr>
+                        <tr>
+                            <td>BaCO₃</td>
+                            <td>Carbonato de bário</td>
+                            <td>Insolúvel</td>
+                            <td>Fabricação de cerâmicas e veneno para ratos.</td>
+                        </tr>
+                        <tr>
+                            <td>Li₂CO₃</td>
+                            <td>Carbonato de lítio</td>
+                            <td>Pouco Solúvel</td>
+                            <td>Medicamento psiquiátrico e produção de baterias.</td>
+                        </tr>
+                        <tr>
+                            <td>Ag₂CO₃</td>
+                            <td>Carbonato de prata</td>
+                            <td>Insolúvel</td>
+                            <td>Precipitado amarelo sensível à luz.</td>
+                        </tr>
+                        <tr>
+                            <td>ZnCO₃</td>
+                            <td>Carbonato de zinco</td>
+                            <td>Insolúvel</td>
+                            <td>Mineral smithsonita.</td>
+                        </tr>
+                        <tr>
+                            <td>CuCO₃</td>
+                            <td>Carbonato de cobre(II)</td>
+                            <td>Insolúvel</td>
+                            <td>Geralmente encontrado como carbonato básico (malaquita).</td>
+                        </tr>
+                        <tr>
+                            <td>NaH₂PO₄</td>
+                            <td>Di-hidrogenofosfato de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Sal ácido. Regulador de pH.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂HPO₄</td>
+                            <td>Hidrogenofosfato de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Sal ácido. Regulador de pH.</td>
+                        </tr>
+                        <tr>
+                            <td>NaHSO₄</td>
+                            <td>Bissulfato de sódio</td>
+                            <td>Solúvel</td>
+                            <td>Usado em limpeza de metais.</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="rule-card">
+                    <h4>Sais Especiais e de Amônio</h4>
+                    <table>
+                        <tr>
+                            <th>Fórmula</th>
+                            <th>Nome</th>
+                            <th>Aplicação / Observação</th>
+                        </tr>
+                        <tr>
+                            <td>NH₄Cl</td>
+                            <td>Cloreto de amônio</td>
+                            <td>Eletrólito em pilhas secas.</td>
+                        </tr>
+                        <tr>
+                            <td>(NH₄)₂SO₄</td>
+                            <td>Sulfato de amônio</td>
+                            <td>Fertilizante.</td>
+                        </tr>
+                        <tr>
+                            <td>KOCN</td>
+                            <td>Cianato de potássio</td>
+                            <td>Usado em síntese orgânica.</td>
+                        </tr>
+                        <tr>
+                            <td>NH₄SCN</td>
+                            <td>Tiocianato de amônio</td>
+                            <td>Reagente para identificação de íons Fe³⁺.</td>
+                        </tr>
+                        <tr>
+                            <td>K₂CrO₄</td>
+                            <td>Cromato de potássio</td>
+                            <td>Indicador (método de Mohr), pigmento amarelo.</td>
+                        </tr>
+                        <tr>
+                            <td>PbCrO₄</td>
+                            <td>Cromato de chumbo(II)</td>
+                            <td>Pigmento "amarelo de cromo".</td>
+                        </tr>
+                        <tr>
+                            <td>K₂Cr₂O₇</td>
+                            <td>Dicromato de potássio</td>
+                            <td>Forte agente oxidante em laboratório.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₃C₆H₅O₇</td>
+                            <td>Citrato de sódio</td>
+                            <td>Anticoagulante em amostras de sangue.</td>
+                        </tr>
+                        <tr>
+                            <td>CaC₂O₄</td>
+                            <td>Oxalato de cálcio</td>
+                            <td>Principal componente dos cálculos renais.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₂B₄O₇·10H₂O</td>
+                            <td>Borax (Tetraborato de sódio)</td>
+                            <td>Limpeza e conservação de alimentos.</td>
+                        </tr>
+                        <tr>
+                            <td>Ca₁₀(PO₄)₆(OH)₂</td>
+                            <td>Hidroxiapatita</td>
+                            <td>Mineral principal dos ossos e dentes.</td>
+                        </tr>
+                        <tr>
+                            <td>CaSO₄·2H₂O</td>
+                            <td>Gesso</td>
+                            <td>Usado em construções e esculturas.</td>
+                        </tr>
+                        <tr>
+                            <td>Fe₃O₄</td>
+                            <td>Magnetita</td>
+                            <td>Óxido misto de ferro(II,III), mineral magnético.</td>
+                        </tr>
+                        <tr>
+                            <td>Pb₃O₄</td>
+                            <td>Minio</td>
+                            <td>Óxido misto de chumbo(II,IV), pigmento vermelho.</td>
+                        </tr>
+                        <tr>
+                            <td>FeTiO₃</td>
+                            <td>Ilmenita</td>
+                            <td>Minério de titânio.</td>
+                        </tr>
+                        <tr>
+                            <td>NaVO₃</td>
+                            <td>Metavanadato de sódio</td>
+                            <td>Reagente de laboratório.</td>
+                        </tr>
+                        <tr>
+                            <td>Na₃VO₄</td>
+                            <td>Ortovanadato de sódio</td>
+                            <td>Inibidor enzimático.</td>
+                        </tr>
+                        <tr>
+                            <td>V₂(SO₄)₃</td>
+                            <td>Sulfato de vanádio(III)</td>
+                            <td>Sal complexo de vanádio.</td>
+                        </tr>
+                        <tr>
+                            <td>VOSO₄</td>
+                            <td>Sulfato de vanadila</td>
+                            <td>Suplemento nutricional.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</div>
+
+    <footer class="site-footer">
+        <img src="UFRRJ.png" alt="Logo UFRRJ">
+        <div class="credits">
+            <strong>Universidade Federal Rural do Rio de Janeiro</strong>
+            <span>Instituto de Química, Departamento de Química Fundamental</span>
+            <span>Prof. Henrique C. S. Junior</span>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
